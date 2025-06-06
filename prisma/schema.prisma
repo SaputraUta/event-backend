@@ -10,6 +10,44 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int      @id @default(autoincrement())
+  email String @unique
+  password String
+  role Role
+  enrrolments Enrollment[]
+}
+
+model Event {
+  id  Int @id @default(autoincrement())
+  title String
+  description String?
+  imageUrl String?
+  startDate DateTime
+  endDate DateTime
+  enrollments Enrollment[]
+}
+
+model Enrollment {
+  id  Int @id @default(autoincrement())
+  user  User  @relation(fields: [userId], references: [id])
+  userId Int
+  event Event @relation(fields: [eventId], references: [id])
+  eventId Int
+  status EnrollmentStatus
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+enum EnrollmentStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
 }
